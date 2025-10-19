@@ -3,7 +3,7 @@
 This repository contains the initial scaffolding for a full-stack web experience that mirrors the ChatGPT interface while being powered entirely by locally hosted services:
 
 - **Frontend**: Next.js 14 application providing the chat UI, history sidebar, and file uploads.
-- **Backend**: FastAPI service coordinating conversations, local Ollama inference, and placeholders for Model Context Protocol (MCP) integrations.
+- **Backend**: FastAPI service coordinating conversations, OpenAI Responses API inference, and placeholders for Model Context Protocol (MCP) integrations.
 
 The current implementation is intentionally lightweight so it can serve as a foundation for future iterations.
 
@@ -21,7 +21,7 @@ The current implementation is intentionally lightweight so it can serve as a fou
 
 - Node.js 18+
 - Python 3.11+
-- A locally running [Ollama](https://ollama.ai/) container exposing `http://localhost:11434`.
+- An [OpenAI API key](https://platform.openai.com/) exported as `OPENAI_API_KEY`.
 
 ### Frontend
 

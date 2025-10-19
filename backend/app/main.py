@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.routes import api_router
 
-app = FastAPI(title="Chat Ollama Backend", version="0.1.0")
+app = FastAPI(title="Chat OpenAI Backend", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
