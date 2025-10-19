@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: chat-ollama-backend
+Version: 0.1.0
+Summary: FastAPI backend for the OpenAI-powered chat workspace
+Requires-Python: >=3.11
+Requires-Dist: fastapi>=0.111.0
+Requires-Dist: uvicorn[standard]>=0.29.0
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: openai>=1.30.5
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: pydantic>=2.6.4
+Requires-Dist: numpy>=1.26.4
+Provides-Extra: dev
+Requires-Dist: pytest>=8.1.1; extra == "dev"
+Requires-Dist: ruff>=0.3.5; extra == "dev"
