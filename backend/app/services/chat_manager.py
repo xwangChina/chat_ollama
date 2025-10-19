@@ -13,7 +13,7 @@ from ..schemas.chat import (
     ProjectSummary,
 )
 from .mcp_client import MCPClient
-from .ollama_client import OllamaClient
+from .openai_client import OpenAIClient
 from .vector_store import MessageRecord, VectorStore
 
 
@@ -22,11 +22,11 @@ class ChatManager:
 
     def __init__(
         self,
-        ollama_client: OllamaClient,
+        llm_client: OpenAIClient,
         vector_store: VectorStore,
         mcp_client: MCPClient,
     ) -> None:
-        self._ollama_client = ollama_client
+        self._llm_client = llm_client
         self._vector_store = vector_store
         self._mcp_client = mcp_client
         self._projects: list[ProjectSummary] = [
@@ -70,7 +70,7 @@ class ChatManager:
         payload: ChatCompletionRequest,
     ) -> ChatCompletionResponse:
         enriched_prompt = await self._augment_prompt(chat_id, payload)
-        model_response = await self._ollama_client.generate(enriched_prompt)
+        model_response = await self._llm_client.generate(enriched_prompt)
         record = self._vector_store.add_message(
             chat_id=chat_id,
             author="assistant",
@@ -107,7 +107,7 @@ class ChatManager:
         tool_summaries = await self._mcp_client.get_tool_summaries(payload.message)
 
         prompt_sections = [
-            "You are a helpful assistant running on a local Ollama model.",
+            "You are a helpful assistant powered by the OpenAI Responses API.",
             "Conversation context:",
             context_snippets or "(no prior context)",
             "Relevant MCP tool insights:",
