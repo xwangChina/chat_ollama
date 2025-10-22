@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from typing import Iterable
 
@@ -15,6 +16,8 @@ from ..schemas.chat import (
 from .mcp_client import MCPClient
 from .openai_client import OpenAIClient
 from .vector_store import MessageRecord, VectorStore
+
+logger = logging.getLogger("app.services.chat_manager")
 
 
 class ChatManager:
@@ -60,6 +63,12 @@ class ChatManager:
         file_ids: list[str] = []
         for uploaded in files:
             content = await uploaded.read()
+            logger.debug(
+                "Storing file for chat %s: name=%s size=%d bytes",
+                chat_id,
+                uploaded.filename,
+                len(content),
+            )
             file_id = self._vector_store.add_file(chat_id=chat_id, filename=uploaded.filename, content=content)
             file_ids.append(file_id)
         return file_ids
@@ -69,12 +78,21 @@ class ChatManager:
         chat_id: str,
         payload: ChatCompletionRequest,
     ) -> ChatCompletionResponse:
+        logger.info(
+            "Generating response: chat_id=%s file_ids=%s", chat_id, bool(payload.file_ids)
+        )
         enriched_prompt = await self._augment_prompt(chat_id, payload)
         model_response = await self._llm_client.generate(enriched_prompt)
         record = self._vector_store.add_message(
             chat_id=chat_id,
             author="assistant",
             content=model_response,
+        )
+        logger.info(
+            "Response generated: chat_id=%s message_id=%s content_len=%d",
+            chat_id,
+            record.message_id,
+            len(model_response),
         )
         return ChatCompletionResponse(id=record.message_id, content=model_response, created_at=record.created_at)
 
@@ -103,6 +121,12 @@ class ChatManager:
             limit=5,
         )
         context_snippets = "\n".join(f"- {record.content}" for record in similar_messages)
+        logger.debug(
+            "Augmenting prompt: chat_id=%s similar=%d file_ids=%d",
+            chat_id,
+            len(similar_messages),
+            len(payload.file_ids or []),
+        )
 
         tool_summaries = await self._mcp_client.get_tool_summaries(payload.message)
 
