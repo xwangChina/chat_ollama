@@ -8,6 +8,7 @@ export interface Message {
   content: string;
   createdAt: string;
   error?: boolean;
+  loading?: boolean;
 }
 
 export default function MessageBubble({ message }: { message: Message }) {
@@ -27,9 +28,17 @@ export default function MessageBubble({ message }: { message: Message }) {
           {new Date(message.createdAt).toLocaleTimeString()}
         </time>
       </header>
-      <p className={message.error ? `${styles.content} ${styles.error}` : styles.content}>
-        {message.content}
-      </p>
+      {message.loading ? (
+        <div className={styles.typing} aria-label="Assistant is typing">
+          <span className={styles.typingDot} />
+          <span className={styles.typingDot} />
+          <span className={styles.typingDot} />
+        </div>
+      ) : (
+        <p className={message.error ? `${styles.content} ${styles.error}` : styles.content}>
+          {message.content}
+        </p>
+      )}
     </article>
   );
 }

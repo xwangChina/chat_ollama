@@ -49,3 +49,43 @@
 .error {
   color: #b91c1c;
 }
+
+/* Typing indicator */
+.typing {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: 14px;
+}
+
+.typingDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111827; /* near-black */
+  opacity: 0.6;
+  animation: typingPulse 1.2s ease-in-out infinite;
+}
+
+.typingDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+}

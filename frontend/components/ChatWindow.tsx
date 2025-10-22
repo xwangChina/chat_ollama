@@ -71,7 +71,15 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
         createdAt: new Date().toISOString()
       };
 
-      setMessages((prev) => [...prev, userMessage]);
+      // Add user message and a transient loading bubble
+      const loadingBubble: Message = {
+        id: generateId(),
+        author: "assistant",
+        content: "",
+        createdAt: new Date().toISOString(),
+        loading: true
+      };
+      setMessages((prev) => [...prev, userMessage, loadingBubble]);
       setInput("");
 
       try {
@@ -87,27 +95,34 @@ export default function ChatWindow({ chatId }: ChatWindowProps) {
           fileIds: uploadedFileIds
         });
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: assistantMessage.id ?? generateId(),
-            author: "assistant",
-            content: assistantMessage.content ?? "(no content)",
-            createdAt: assistantMessage.createdAt ?? new Date().toISOString()
-          }
-        ]);
+        setMessages((prev) => {
+          // Remove any loading bubbles before adding the real response
+          const withoutLoading = prev.filter((m) => !m.loading);
+          return [
+            ...withoutLoading,
+            {
+              id: assistantMessage.id ?? generateId(),
+              author: "assistant",
+              content: assistantMessage.content ?? "(no content)",
+              createdAt: assistantMessage.createdAt ?? new Date().toISOString()
+            }
+          ];
+        });
       } catch (error) {
         console.error(error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: generateId(),
-            author: "assistant",
-            content: "Sorry, something went wrong while contacting the backend.",
-            createdAt: new Date().toISOString(),
-            error: true
-          }
-        ]);
+        setMessages((prev) => {
+          const withoutLoading = prev.filter((m) => !m.loading);
+          return [
+            ...withoutLoading,
+            {
+              id: generateId(),
+              author: "assistant",
+              content: "Sorry, something went wrong while contacting the backend.",
+              createdAt: new Date().toISOString(),
+              error: true
+            }
+          ];
+        });
         setUploadState((prev) => ({ ...prev, isUploading: false, error: String(error) }));
       }
     },
